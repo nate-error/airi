@@ -3,7 +3,7 @@ import type { Session, User } from 'better-auth'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
-import { fetchSession } from '../libs/auth'
+// import { fetchSession } from '../libs/auth'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User>()
@@ -14,7 +14,7 @@ export const useAuthStore = defineStore('auth', () => {
   // For controlling the login drawer on mobile
   const isLoginDrawerOpen = ref(false)
 
-  const initialized = ref(false)
+  /* const initialized = ref(false)
   const initialize = () => {
     if (initialized.value)
       return
@@ -24,7 +24,7 @@ export const useAuthStore = defineStore('auth', () => {
     initialized.value = true
   }
 
-  initialize()
+  initialize() */
 
   return {
     user,

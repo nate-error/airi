@@ -21,7 +21,7 @@ import type {
 import type { AliyunRealtimeSpeechExtraOptions } from './providers/aliyun/stream-transcription'
 
 import { isStageTamagotchi, isUrl } from '@proj-airi/stage-shared'
-import { computedAsync, useIntervalFn, useLocalStorage } from '@vueuse/core'
+import { computedAsync, useIntervalFn, useLocalStorage, watchDebounced } from '@vueuse/core'
 import {
   createOpenAI,
 } from '@xsai-ext/providers/create'
@@ -44,7 +44,7 @@ import {
   createUnVolcengine,
   listVoices,
 } from 'unspeech'
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { listProviders as listDefinedProviders } from '../libs/providers'
@@ -1886,8 +1886,8 @@ export const useProvidersStore = defineStore('providers', () => {
   }
 
   // Call initially and watch for changes
-  watch(providerCredentials, updateConfigurationStatus, { deep: true, immediate: true })
-  startPeriodicRuntimeValidation()
+  watchDebounced(providerCredentials, updateConfigurationStatus, { deep: true, debounce: 500 })
+  // startPeriodicRuntimeValidation()
 
   // Available providers (only those that are properly configured)
   const availableProviders = computed(() => Object.keys(providerMetadata).filter(providerId => providerRuntimeState.value[providerId]?.isConfigured))
@@ -2017,7 +2017,7 @@ export const useProvidersStore = defineStore('providers', () => {
   const previousCredentialHashes = ref<Record<string, string>>({})
 
   // Watch for credential changes and refetch models accordingly
-  watch(providerCredentials, (newCreds) => {
+  watchDebounced(providerCredentials, (newCreds) => {
     const changedProviders: string[] = []
 
     for (const providerId in newCreds) {
@@ -2040,7 +2040,7 @@ export const useProvidersStore = defineStore('providers', () => {
         fetchModelsForProvider(providerId)
       }
     }
-  }, { deep: true, immediate: true })
+  }, { deep: true, debounce: 500 })
 
   // Function to get localized provider metadata
   function getProviderMetadata(providerId: string) {
